@@ -27,13 +27,14 @@
       </el-col>
     </el-row>
     <el-pagination
-      style="margin-top: 20px; text-align: center;"
-      layout="prev, pager, next"
-      :total="rooms.length"
-      :current-page="currentPage"
-      :page-size="pageSize"
+      @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
-    ></el-pagination>
+      :current-page="currentPage"
+      :page-sizes="[5, 10, 15, 20]"
+      :page-size="pagesize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total">
+    </el-pagination>
   </div>
 </template>
 
@@ -45,131 +46,44 @@ export default {
   name: 'RentalList',
   data() {
     return {
-      rooms: [
-        {
-          id: 1,
-          title: '光华路SOHO一期',
-          address: '北京市朝阳区光华路SOHO一期',
-          image: 'https://picsum.photos/400/300?image=1042',
-          type: '3室1厅1卫',
-          area: 100,
-          price: '12000',
-          more: '带阳台，家电齐全，免中介'
-        },
-        {
-          id: 2,
-          title: '团结湖公寓',
-          address: '北京市朝阳区团结湖公寓',
-          image: 'https://picsum.photos/400/300?image=1067',
-          type: '2室2厅1卫',
-          area: 80,
-          price: '8500',
-          more: '交通便利，小区绿化好，求有缘人'
-        },
-        {
-          id: 3,
-          title: '望京SOHO',
-          address: '北京市朝阳区望京SOHO',
-          image: 'https://picsum.photos/400/300?image=1074',
-          type: '1室0厅1卫',
-          area: 50,
-          price: '5800',
-          more: '独立卫浴，家电齐全，随时可以入住'
-        },
-        {
-          id: 4,
-          title: '中关村SOHO',
-          address: '北京市海淀区中关村SOHO',
-          image: 'https://picsum.photos/400/300?image=1079',
-          type: '2室1厅1卫',
-          area: 90,
-          price: '9500',
-          more: '近科技园区，房子新装修，随时可以看房'
-        },
-        {
-          id: 5,
-          title: '丰台城区',
-          address: '北京市丰台区城区',
-          image: 'https://picsum.photos/400/300?image=1075',
-          type: '3室2厅2卫',
-          area: 120,
-          price: '12800',
-          more: '近地铁口，周边设施齐全，求找室友'
-        },
-        {
-          id: 6,
-          title: '北京邮电大学家属区',
-          address: '北京市海淀区北京邮电大学家属区',
-          image: 'https://picsum.photos/400/300?image=1058',
-          type: '1室1厅1卫',
-          area: 70,
-          price: '7500',
-          more: '出门便是公交车站，周边超市购物方便'
-        },
-        {
-          id: 7,
-          title: '雅宝路小区',
-          address: '上海市闵行区雅宝路小区',
-          image: 'https://picsum.photos/400/300?image=1080',
-          type: '2室1厅1卫',
-          area: 85,
-          price: '8700',
-          more: '治安好，近公园，干净整洁'
-        },
-        {
-          id: 8,
-          title: '广州市天河区公寓',
-          address: '广州市天河区天河区公寓',
-          image: 'https://picsum.photos/400/300?image=1077',
-          type: '1室1厅1卫',
-          area: 60,
-          price: '6500',
-          more: '安全方便，装修精致，周围环境好'
-        },
-        {
-          id: 9,
-          title: '深圳市罗湖区公寓',
-          address: '深圳市罗湖区罗湖区公寓',
-          image: 'https://picsum.photos/400/300?image=1065',
-          type: '2室2厅1卫',
-          area: 90,
-          price: '9800',
-          more: '交通方便，靠近火车站和地铁口'
-        },
-        {
-          id: 10,
-          title: '杭州市江干区公寓',
-          address: '杭州市江干区江干区公寓',
-          image: 'https://picsum.photos/400/300?image=1050',
-          type: '2室1厅1卫',
-          area: 80,
-          price: '8500',
-          more: '干净明亮，拎包入住，随时可以看房'
-        }
-      ],
-      currentPage: 1,
-      pageSize: 3
+      rooms: [],
+      total: 0, //总条数
+      currentPage: 1, //初始页
+      pagesize: 5, //    每页的数据
     };
   },
   computed: {
-    paginatedRooms() {
-      const startIndex = (this.currentPage - 1) * this.pageSize;
-      const endIndex = startIndex + this.pageSize;
-      return this.rooms.slice(startIndex, endIndex);
-    }
+
   },
   methods: {
-    handleCurrentChange(newPage) {
-      this.currentPage = newPage;
+    // 初始页currentPage、初始每页数据数pagesize和数据data
+    handleSizeChange (size) {
+        console.log(size,'size');
+        this.pagesize = size;
+        console.log(this.pagesize); //每页下拉显示数据
+        this.getRooms()
+    },
+    handleCurrentChange (currentPage) {
+      console.log(currentPage,'currentPage');
+      this.currentPage = currentPage;
+      console.log(this.currentPage); //点击第几页
+      this.getRooms()
     },
     getRooms(){
+      console.log('getRooms当前页:', this.currentPage)
+      console.log('getRooms当前页数量:', this.pagesize)
       axios.get('/api/room/pageList', {
+        params: {
+          pageSize: this.pagesize,
+          pageNum: this.currentPage
+        }
         })
         .then(response => {
           console.log(response)
           console.log('response.data.data.rows', response.data.data.rows)
           this.rooms = response.data.data.rows
-          this.pageSize  = response.data.data.pages
+          // this.pagesize  = response.data.data.pages
+          this.total = response.data.data.total
           console.log('-----------rooms', this.rooms)
         })
         .catch(error => console.log(error))

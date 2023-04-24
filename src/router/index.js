@@ -9,7 +9,7 @@ import SearchHouse from '@/views/search/House.vue'
 import Register from '@/views/Register.vue'
 import Login from '@/views/Login.vue'
 import RentalDetail from '@/views/room/RentalDetail.vue'
-import RentalHouseAdd from '@/views/room/RentalRoomAdd.vue'
+import RentalRoomAdd from '@/views/room/RentalRoomAdd.vue'
 
 Vue.use(Router)
 
@@ -26,9 +26,9 @@ export default new Router({
       component: RentHouse
     },
     {
-      path: '/rental/house/add',
-      name: 'rentalHouseAdd',
-      component: RentalHouseAdd
+      path: '/rental/room/add',
+      name: 'rentalRoomAdd',
+      component: RentalRoomAdd
     },
     {
       path: '/rent/tenant',
