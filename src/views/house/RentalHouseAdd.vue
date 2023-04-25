@@ -1,0 +1,227 @@
+<template>
+  <div class="rental-add">
+    <h2>新增出租房</h2>
+    <el-form ref="form" :model="form" :rules="rules" label-position="left" label-width="100px" class="form">
+      <el-form-item label="出租房所在地区">
+        <el-cascader
+        v-model="form.location"
+        :options="options"
+        :props="{ checkStrictly: true }"
+        placeholder="请选择出租房所在地区"
+        clearable></el-cascader>
+      </el-form-item>
+      <el-form-item label="出租房附近地铁">
+        <el-cascader
+        v-model="form.subwayLocation"
+        :options="subwayOptions"
+        :props="{ checkStrictly: true }"
+        placeholder="请选择出租房附近地铁"
+        clearable></el-cascader>
+      </el-form-item>
+      <el-form-item label="小区/村名称" prop="villageName">
+        <el-input v-model="form.villageName" type="string" placeholder="请输入小区/村名称"></el-input>
+      </el-form-item>
+      <el-form-item label="房号信息" prop="houseNo">
+        <el-input v-model="form.houseNo" type="string" placeholder="请输入房号"></el-input>
+      </el-form-item>
+      <el-form-item label="总面积" prop="area">
+        <el-input v-model="form.area" type="number" placeholder="请输入总面积"></el-input>
+      </el-form-item>
+      <el-form-item label="月租金" prop="price">
+        <el-input v-model="form.price" type="number" placeholder="请输入月租金"></el-input>
+      </el-form-item>
+      <el-form-item label="电费/度" prop="powerRate">
+        <el-input v-model="form.powerRate" type="number" placeholder="请输入水电费"></el-input>
+      </el-form-item>
+      <el-form-item label="水费/吨" prop="waterRate">
+        <el-input v-model="form.waterRate" type="number" placeholder="请输入水电费"></el-input>
+      </el-form-item>
+      <el-form-item label="封面图">
+        <el-upload
+          ref="upload"
+          class="upload-demo"
+          :action="uploadURL"
+          :show-file-list="false"
+          :on-success="handleSuccess">
+          <el-button size="small" type="primary">点击上传</el-button>
+          <div slot="tip" class="el-upload__tip">封面图不超过 5MB</div>
+        </el-upload>
+        <div v-if="form.cover_url" class="thumb-wrap">
+          <img :src="form.cover_url" alt="" class="thumb">
+        </div>
+      </el-form-item>
+      <el-form-item label="户型">
+        <el-select v-model="form.houseTypeId" placeholder="请选择户型">
+        <el-option
+          v-for="item in houseTypeList"
+          :key="item.id"
+          :label="item.name"
+          :value="item.id">
+        </el-option>
+      </el-select>
+      </el-form-item>
+      <el-form-item label="出租方式" prop="rentalMethod">
+        <el-radio v-model="form.rentalMethod" label="0">整租</el-radio>
+        <el-radio v-model="form.rentalMethod" label="1">合租</el-radio>
+      </el-form-item>
+      <el-form-item label="装修级别" prop="level">
+        <el-radio v-model="form.level" label="0">简装</el-radio>
+        <el-radio v-model="form.level" label="1">精装</el-radio>
+      </el-form-item>
+      <el-form-item label="朝向" prop="toward">
+        <el-radio v-model="form.toward" label="0">东</el-radio>
+        <el-radio v-model="form.toward" label="1">西</el-radio>
+        <el-radio v-model="form.toward" label="2">南</el-radio>
+        <el-radio v-model="form.toward" label="3">北</el-radio>
+      </el-form-item>
+      <el-form-item label="是否有卫生间" prop="toilet">
+        <el-switch v-model="form.toilet"></el-switch>
+      </el-form-item>
+      <el-form-item label="是否有厨房" prop="kitchen">
+        <el-switch v-model="form.kitchen"></el-switch>
+      </el-form-item>
+      <el-form-item label="是否有阳台" prop="balcony">
+        <el-switch v-model="form.balcony"></el-switch>
+      </el-form-item>
+      <el-form-item label="出租房宣传照片">
+        <el-upload
+          ref="upload"
+          class="upload-demo"
+          :action="uploadURL"
+          :on-success="handleSuccess"
+          :multiple="true">
+          <el-button size="small" type="primary">点击上传</el-button>
+          <div slot="tip" class="el-upload__tip">宣传照片不超过 5MB</div>
+        </el-upload>
+        <div v-if="form.photos && form.photos.length" class="thumb-wrap">
+          <img v-for="(photo, index) in form.photos" :src="photo" :key="index" alt="" class="thumb">
+        </div>
+      </el-form-item>
+      <el-form-item label="备注" prop="description">
+        <el-input v-model="form.description" type="string" placeholder="请输入备注信息"></el-input>
+      </el-form-item>
+      <el-button type="primary" @click="submitForm">提交</el-button>
+    </el-form>
+  </div>
+</template>
+
+<script>
+import axios from 'axios';
+import { Notification } from 'element-ui';
+
+export default {
+  name: 'RentalAdd',
+  data() {
+    return {
+      form: {
+        location: [],
+        subwayLocation:[],
+        price: '',
+        area:'',
+        powerRate: '',
+        waterRate: '',
+        villageName: '',
+        rentalMethod: 1,
+        level: 1,
+        cover_url: '',
+        houseTypeId:'',
+        houseNo: '',
+        description: '',
+        toilet: false,
+        kitchen: false,
+        balcony: false,
+        photos: [],
+      },
+      houseTypeList:[],
+      options: [],
+      subwayOptions: [],
+      rules: {
+        location: [
+          { required: true, message: '请选择出租房所在地区', trigger: 'change' }
+        ],
+        houseTypeId: [
+          { required: true, message: '请选择出租房户型', trigger: 'blur' }
+        ],
+        price: [
+          { required: true, message: '请输入月租金', trigger: 'blur' }
+        ],
+        waterRate: [
+          { required: true, message: '请输入水费', trigger: 'blur' }
+        ],
+        powerRate: [
+          { required: true, message: '请输入电费', trigger: 'blur' }
+        ],
+        toilet: [
+          { required: true, message: '请选择是否有卫生间', trigger: 'change' }
+        ],
+        cover_url: [
+          { required: true, message: '请上传封面图', trigger: 'blur' }
+        ]
+      },
+      uploadURL: 'YOUR_UPLOAD_URL_HERE'
+    };
+  },
+  methods: {
+    handleSuccess(res) {
+      Notification.success('上传成功');
+      this.form.cover_url = res.data.url; // res.data.url是上传成功后的图片地址
+    },
+    getMapCity(){
+      axios.get('/api/house/mapCity', {
+        })
+        .then(response => {
+          this.options = response.data.data
+        })
+        .catch(error => console.log(error))
+      },
+      listMapSubway(){
+      axios.get('/api/house/mapSubway', {
+        })
+        .then(response => {
+          this.subwayOptions = response.data.data
+        })
+        .catch(error => console.log(error))
+      },
+      listHouseType(){
+      axios.get('/api/house/listHouseType', {
+        })
+        .then(response => {
+          this.houseTypeList = response.data.data
+        })
+        .catch(error => console.log(error))
+      },
+    submitForm(formName) {
+      axios.post('/api/house/save', this.form)
+            .then(res => {
+              Notification.success('新增出租房成功');
+              this.$router.push('/');
+            })
+            .catch(err => {
+              console.log(err)
+              Notification.error('新增出租房失败，请稍候再试');
+            });
+
+    }
+  },
+  created() {
+    this.getMapCity()
+    this.listHouseType()
+    this.listMapSubway()
+  }
+};
+</script>
+
+<style scoped>
+  .thumb-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+  .thumb {
+    object-fit: cover;
+    width: 100px;
+    height: 100px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+  }
+</style>

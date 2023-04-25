@@ -8,8 +8,8 @@ import SearchTenant from '@/views/search/Tenant.vue'
 import SearchHouse from '@/views/search/House.vue'
 import Register from '@/views/Register.vue'
 import Login from '@/views/Login.vue'
-import RentalDetail from '@/views/room/RentalDetail.vue'
-import RentalRoomAdd from '@/views/room/RentalRoomAdd.vue'
+import RentalDetail from '@/views/house/RentalDetail.vue'
+import RentalHouseAdd from '@/views/house/RentalHouseAdd.vue'
 
 Vue.use(Router)
 
@@ -27,8 +27,8 @@ export default new Router({
     },
     {
       path: '/rental/room/add',
-      name: 'rentalRoomAdd',
-      component: RentalRoomAdd
+      name: 'rentalHouseAdd',
+      component: RentalHouseAdd
     },
     {
       path: '/rent/tenant',

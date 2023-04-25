@@ -1,6 +1,7 @@
 <template>
   <div class="page-container">
-    <el-button type="primary" @click="$router.push('/rental/room/add')">新增出租房</el-button>
+    <el-button type="primary" @click="$router.push('/rental/room/add')" style="position:absolute;top:80px;right:20px;">新增出租房</el-button>
+    <el-input v-model="keyword" placeholder="请输入小区名称" @input="getHouseList" size="medium"></el-input>
     <el-row>
       <el-col :md="24" :lg="8" v-for="room in rooms" :key="room.id" class="room-item">
         <el-card shadow="hover" class="room-card">
@@ -8,11 +9,16 @@
             <img :src="room.cover" alt="" class="room-image" v-on:click="goRentalDetail(room.id)"/>
           </div>
           <div class="content-container">
-            <div class="room-title">{{ room.villageName }}</div>
-            <div class="room-address">{{ room.address }}</div>
+            <div class="room-title"> {{ room.address }} </div>
+            <div class="room-address"> {{room.rentalMethod == 0 ? '整租' : '合租'}} - {{ room.villageName }}</div>
             <div class="room-info">
-              <span>户型：{{ room.roomNumber }} 室 {{ room.roomNumber }} 厅 {{ room.saloonNumber }} 卫生间 {{ room.toiletNumber }} 厨房 {{ room.kitchen }} 阳台 {{ room.balcony }}</span>
+              <span>户型：{{ room.houseType }}</span>
               <span>房屋面积：{{ room.area }}平米</span>
+            </div>
+            <div>
+              <span v-if="room.toilet==1">有卫生间</span>
+              <span v-if="room.kitchen==1">有厨房</span>
+              <span v-if="room.balcony==1">有阳台</span>
             </div>
             <div class="room-price-and-more">
               <div class="room-price">
@@ -30,7 +36,7 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page="currentPage"
-      :page-sizes="[5, 10, 15, 20]"
+      :page-sizes="[6, 9, 12, 15]"
       :page-size="pagesize"
       layout="total, sizes, prev, pager, next, jumper"
       :total="total">
@@ -49,7 +55,8 @@ export default {
       rooms: [],
       total: 0, //总条数
       currentPage: 1, //初始页
-      pagesize: 5, //    每页的数据
+      pagesize: 6, //    每页的数据
+      keyword:'',
     };
   },
   computed: {
@@ -61,21 +68,20 @@ export default {
         console.log(size,'size');
         this.pagesize = size;
         console.log(this.pagesize); //每页下拉显示数据
-        this.getRooms()
+        this.getHouseList()
     },
     handleCurrentChange (currentPage) {
       console.log(currentPage,'currentPage');
       this.currentPage = currentPage;
       console.log(this.currentPage); //点击第几页
-      this.getRooms()
+      this.getHouseList()
     },
-    getRooms(){
-      console.log('getRooms当前页:', this.currentPage)
-      console.log('getRooms当前页数量:', this.pagesize)
-      axios.get('/api/room/pageList', {
+    getHouseList(){
+      axios.get('/api/house/pageList', {
         params: {
           pageSize: this.pagesize,
-          pageNum: this.currentPage
+          pageNum: this.currentPage,
+          keyword: this.keyword
         }
         })
         .then(response => {
@@ -93,7 +99,7 @@ export default {
     },
   },
   created(){
-    this.getRooms()
+    this.getHouseList()
   }
 };
 </script>
