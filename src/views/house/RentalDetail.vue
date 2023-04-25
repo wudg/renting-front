@@ -1,29 +1,37 @@
 <template>
-  <div class="detail" style="margin-top:250px">
-    <div class="image-container">
-      <img :src="house.cover" alt="出租房图片">
-    </div>
-    <div class="info-container">
-      <p>{{house.rentalMethod == 0 ? '整租' : '合租'}} - {{ house.villageName }}</p>
-      <p class="description">备注：{{ house.description }}</p>
-      <span>户型：{{ house.houseType }}</span>
-      <span>房屋面积：{{ house.area }}平米</span>
-      <span v-if="house.toilet==1">有卫生间</span>
-      <span v-if="house.kitchen==1">有厨房</span>
-      <span v-if="house.balcony==1">有阳台</span>
-      <div class="transportation">
+  <div class="rental-details">
+    <h2>{{rental.address}}</h2>
+    <el-row>
+      <el-col :span="12">面积：{{rental.area}}平方米</el-col>
+      <el-col :span="12">每月水电费：{{rental.waterRate}}元/吨，{{rental.powerRate}}元/度</el-col>
+      <el-col :span="12">是否有厨房：{{rental.kitchen ? '有' : '没有'}}</el-col>
+      <el-col :span="12">是否有卫生间：{{rental.toilet ? '有' : '没有'}}</el-col>
+      <el-col :span="12">是否有阳台：{{rental.balcony ? '有' : '没有'}}</el-col>
+      <el-col :span="12">房租：{{rental.price}}元/月</el-col>
+      <el-col :span="12">出租方式：{{rental.rentalMethod}}</el-col>
+      <el-col :span="12">位置所在区：{{rental.district}}</el-col>
+      <el-col :span="12">小区名字：{{rental.villageName}}</el-col>
+      <el-col :span="12">附近地铁站：{{rental.subwayStation}}</el-col>
+      <el-col :span="12">附近地铁线路：{{rental.subwayLine}}</el-col>
+      <el-col :span="12">备注：{{rental.description}}</el-col>
+      <el-col :span="12">上次更新时间：{{rental.updateTime}}</el-col>
+      <el-col :span="12">创建时间：{{rental.createTime}}</el-col>
+      <el-col :span="12">
+        户型：
         <el-row>
-          <el-col :xs="24" :sm="12">
-            <p class="label">附近公交：</p>
-            <p class="content">{{ house.bus }}</p>
-          </el-col>
-          <el-col :xs="24" :sm="12">
-            <p class="label">附近地铁：</p>
-            <p class="content">{{ house.subway }}</p>
-          </el-col>
+          <el-col :span="12">{{rental.houseType}}</el-col>
         </el-row>
-      </div>
-    </div>
+      </el-col>
+      <el-col :span="24" v-if="true">
+        <h3>出租房照片(点击查看更多图片)</h3>
+        <el-image
+          :src="rental.cover"
+          :preview-src-list="photos"
+          style="width: 500px; height: 500px"
+          fit="fill"
+        />
+      </el-col>
+    </el-row>
   </div>
 </template>
 
@@ -35,7 +43,8 @@ export default {
   name: 'RentalDetail',
   data() {
     return {
-      house: {},
+      rental: {},
+      photos:[]
     };
   },
   mounted() {
@@ -44,7 +53,7 @@ export default {
     // 我们可以假设house数据是通过http请求获取的
     // 这里我们使用假数据
     this.getHouseById(houseId);
-    console.log('house', this.house)
+    console.log('rental', this.rental)
   },
   methods: {
     getHouseById(id) {
@@ -52,11 +61,11 @@ export default {
         params:{
           id: id
         }
-
         })
         .then(response => {
           console.log('response', response)
-          this.house = response.data.data
+          this.rental = response.data.data
+          this.photos = JSON.parse(this.rental.images)
         })
         .catch(error => console.log(error))
     }

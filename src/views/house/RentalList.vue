@@ -1,32 +1,61 @@
 <template>
   <div class="page-container">
-    <el-button type="primary" @click="$router.push('/rental/room/add')" style="position:absolute;top:80px;right:20px;">新增出租房</el-button>
+    <!-- 新增出租房按钮 -->
+    <el-button type="primary" @click="$router.push('/rental/house/add')" style="position:absolute;top:80px;right:20px;">新增出租房</el-button>
+    <!-- 按小区名字搜索出租房 -->
     <el-input v-model="keyword" placeholder="请输入小区名称" @input="getHouseList" size="medium"></el-input>
+
+    <!-- 出租房列表 -->
     <el-row>
-      <el-col :md="24" :lg="8" v-for="room in rooms" :key="room.id" class="room-item">
-        <el-card shadow="hover" class="room-card">
+      <el-col :md="24" :lg="8" v-for="house in houses" :key="house.id" class="house-item">
+        <!-- 卡片方式展示出租房 -->
+        <el-card shadow="hover" class="house-card">
+
+          <!-- 主图 -->
           <div class="image-container">
-            <img :src="room.cover" alt="" class="room-image" v-on:click="goRentalDetail(room.id)"/>
+            <img :src="house.cover" alt="" class="house-image" @click="goRentalDetail(house.id)"/>
           </div>
+
+          <!-- 出租房其他描述信息 -->
           <div class="content-container">
-            <div class="room-title"> {{ room.address }} </div>
-            <div class="room-address"> {{room.rentalMethod == 0 ? '整租' : '合租'}} - {{ room.villageName }}</div>
-            <div class="room-info">
-              <span>户型：{{ room.houseType }}</span>
-              <span>房屋面积：{{ room.area }}平米</span>
+            <!-- 具体位置(所在区) -->
+            <div class="house-title"> {{ house.address }}<span v-if="house.district">({{house.district}}) </span></div>
+
+            <!-- 地铁站(地铁线路) -->
+            <div class="house-title"> {{ house.subwayStation }}<span v-if="house.subwayStationLine">({{house.subwayLine}})</span> </div>
+
+            <!-- 出租类型-所在小区 -->
+            <div class="house-address"> {{house.rentalMethod == 0 ? '整租' : '合租'}} - {{ house.villageName }}</div>
+
+            <!-- 房子基本属性 -->
+            <div class="house-info">
+              <span>户型：{{ house.houseType }}</span>
+              <span>房屋面积：{{ house.area }}平米</span>
+              <span v-if="house.toilet==1">有卫生间</span>
+              <span v-if="house.kitchen==1">有厨房</span>
+              <span v-if="house.balcony==1">有阳台</span>
             </div>
-            <div>
-              <span v-if="room.toilet==1">有卫生间</span>
-              <span v-if="room.kitchen==1">有厨房</span>
-              <span v-if="room.balcony==1">有阳台</span>
+
+            <!-- 费用相关 -->
+
+            <div class="house-price-and-more">
+              <!-- 月租 -->
+              <div class="house-price">
+                {{ house.price }}/月
+              </div>
+              <!-- 水费 -->
+              <div class="house-more">
+                {{ house.wateRate }}
+              </div>
+              <!-- 电费 -->
+              <div class="house-more">
+                {{ house.powerRate }}
+              </div>
             </div>
-            <div class="room-price-and-more">
-              <div class="room-price">
-                {{ room.price }}/月
-              </div>
-              <div class="room-more">
-                {{ room.description }}
-              </div>
+
+            <!-- 备注 -->
+            <div class="house-more">
+                {{ house.description }}
             </div>
           </div>
         </el-card>
@@ -52,8 +81,9 @@ export default {
   name: 'RentalList',
   data() {
     return {
-      rooms: [],
+      houses: [],
       total: 0, //总条数
+      photos:[],
       currentPage: 1, //初始页
       pagesize: 6, //    每页的数据
       keyword:'',
@@ -87,15 +117,16 @@ export default {
         .then(response => {
           console.log(response)
           console.log('response.data.data.rows', response.data.data.rows)
-          this.rooms = response.data.data.rows
+          this.houses = response.data.data.rows
+          this.photos = JSON.parse(this.house.images)
           // this.pagesize  = response.data.data.pages
           this.total = response.data.data.total
-          console.log('-----------rooms', this.rooms)
+          console.log('-----------houses', this.houses)
         })
         .catch(error => console.log(error))
       },
-    goRentalDetail(roomId) {
-        this.$router.push({ name: "rentalDetail", params: { id: roomId } });
+    goRentalDetail(houseId) {
+        this.$router.push({ name: "rentalDetail", params: { id: houseId } });
     },
   },
   created(){
@@ -112,11 +143,11 @@ export default {
   padding: 20px;
 }
 
-.room-item {
+.house-item {
   margin-bottom: 20px;
 }
 
-.room-card {
+.house-card {
   height: 100%;
 }
 
@@ -126,7 +157,7 @@ export default {
   justify-content: center;
 }
 
-.room-image {
+.house-image {
   height: 100%;
   width: 100%;
   object-fit: cover;
@@ -136,32 +167,32 @@ export default {
   padding: 20px;
 }
 
-.room-info {
+.house-info {
   margin-top: 10px;
   display: flex;
   justify-content: space-between;
 }
 
-.room-price-and-more {
+.house-price-and-more {
   margin-top: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.room-price {
+.house-price {
   font-size: 24px;
   color: #ff5a5f;
   font-weight: bold;
 }
 
-.room-address {
+.house-address {
   font-size: 18px;
   font-weight: bold;
   margin-top: 10px;
 }
 
-.room-more {
+.house-more {
   font-size: 12px;
   color: #bbb;
 }

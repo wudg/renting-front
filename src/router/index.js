@@ -26,7 +26,7 @@ export default new Router({
       component: RentHouse
     },
     {
-      path: '/rental/room/add',
+      path: '/rental/house/add',
       name: 'rentalHouseAdd',
       component: RentalHouseAdd
     },

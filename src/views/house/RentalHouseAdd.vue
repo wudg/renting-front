@@ -42,12 +42,12 @@
           class="upload-demo"
           :action="uploadURL"
           :show-file-list="false"
-          :on-success="handleSuccess">
+          :on-success="handleSuccess1">
           <el-button size="small" type="primary">点击上传</el-button>
           <div slot="tip" class="el-upload__tip">封面图不超过 5MB</div>
         </el-upload>
-        <div v-if="form.cover_url" class="thumb-wrap">
-          <img :src="form.cover_url" alt="" class="thumb">
+        <div v-if="form.cover" class="thumb-wrap">
+          <img :src="form.cover" alt="" class="thumb">
         </div>
       </el-form-item>
       <el-form-item label="户型">
@@ -88,7 +88,8 @@
           ref="upload"
           class="upload-demo"
           :action="uploadURL"
-          :on-success="handleSuccess"
+          :on-remove="handleRemove"
+          :on-success="handleSuccess2"
           :multiple="true">
           <el-button size="small" type="primary">点击上传</el-button>
           <div slot="tip" class="el-upload__tip">宣传照片不超过 5MB</div>
@@ -123,7 +124,7 @@ export default {
         villageName: '',
         rentalMethod: 1,
         level: 1,
-        cover_url: '',
+        cover: '',
         houseTypeId:'',
         houseNo: '',
         description: '',
@@ -154,17 +155,30 @@ export default {
         toilet: [
           { required: true, message: '请选择是否有卫生间', trigger: 'change' }
         ],
-        cover_url: [
+        cover: [
           { required: true, message: '请上传封面图', trigger: 'blur' }
         ]
       },
-      uploadURL: 'YOUR_UPLOAD_URL_HERE'
+      uploadURL: '/api/house/uploadImg'
     };
   },
   methods: {
-    handleSuccess(res) {
+    handleSuccess1(res) {
       Notification.success('上传成功');
-      this.form.cover_url = res.data.url; // res.data.url是上传成功后的图片地址
+      console.log('res.data.data', res)
+      this.form.cover = res.data; // res.data.url是上传成功后的图片地址
+    },
+    handleRemove(file, photos) {
+      console.log(file, photos)
+      console.log('file.response.data', file.response.data)
+      let index = photos.indexOf(file.response.data);
+      this.form.photos.splice(index, 1)
+
+    },
+    handleSuccess2(res) {
+      Notification.success('上传成功');
+      this.form.photos.push(res.data); // res.data.url是上传成功后的图片地址
+      console.log('所有图片', this.form.photos)
     },
     getMapCity(){
       axios.get('/api/house/mapCity', {
