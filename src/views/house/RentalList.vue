@@ -43,19 +43,19 @@
               <div class="house-price">
                 {{ house.price }}/月
               </div>
-              <!-- 水费 -->
+              <!-- 水费
               <div class="house-more">
                 {{ house.wateRate }}
-              </div>
+              </div> -->
               <!-- 电费 -->
-              <div class="house-more">
+              <!-- <div class="house-more">
                 {{ house.powerRate }}
-              </div>
+              </div> -->
             </div>
 
             <!-- 备注 -->
             <div class="house-more">
-                {{ house.description }}
+                {{ house.description ? house.description : '无备注信息' }}
             </div>
           </div>
         </el-card>
@@ -81,11 +81,15 @@ export default {
   name: 'RentalList',
   data() {
     return {
+      // 出租房列表数据
       houses: [],
+      // 出租房总数
       total: 0, //总条数
-      photos:[],
+      // 当前页
       currentPage: 1, //初始页
+      // 每页大小
       pagesize: 6, //    每页的数据
+      // 关键词
       keyword:'',
     };
   },
@@ -95,19 +99,21 @@ export default {
   methods: {
     // 初始页currentPage、初始每页数据数pagesize和数据data
     handleSizeChange (size) {
-        console.log(size,'size');
+        //每页数量修改，重新执行查询
         this.pagesize = size;
-        console.log(this.pagesize); //每页下拉显示数据
         this.getHouseList()
     },
+
+    // 当前页码修改
     handleCurrentChange (currentPage) {
-      console.log(currentPage,'currentPage');
       this.currentPage = currentPage;
-      console.log(this.currentPage); //点击第几页
       this.getHouseList()
     },
+
+    // 获取所有出租房信息
     getHouseList(){
       axios.get('/api/house/pageList', {
+        // 分页查询和关键词
         params: {
           pageSize: this.pagesize,
           pageNum: this.currentPage,
@@ -115,20 +121,18 @@ export default {
         }
         })
         .then(response => {
-          console.log(response)
-          console.log('response.data.data.rows', response.data.data.rows)
           this.houses = response.data.data.rows
-          this.photos = JSON.parse(this.house.images)
-          // this.pagesize  = response.data.data.pages
           this.total = response.data.data.total
-          console.log('-----------houses', this.houses)
         })
         .catch(error => console.log(error))
       },
+
+    // 跳转到出租房明细页面(携带出租房ID)
     goRentalDetail(houseId) {
         this.$router.push({ name: "rentalDetail", params: { id: houseId } });
     },
   },
+  // 进页面即初始化
   created(){
     this.getHouseList()
   }
