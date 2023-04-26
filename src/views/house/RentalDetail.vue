@@ -1,37 +1,30 @@
 <template>
   <div class="rental-details">
-    <h2>{{rental.address}}</h2>
-    <el-row>
-      <el-col :span="12">面积：{{rental.area}}平方米</el-col>
-      <el-col :span="12">每月水电费：{{rental.waterRate}}元/吨，{{rental.powerRate}}元/度</el-col>
-      <el-col :span="12">是否有厨房：{{rental.kitchen ? '有' : '没有'}}</el-col>
-      <el-col :span="12">是否有卫生间：{{rental.toilet ? '有' : '没有'}}</el-col>
-      <el-col :span="12">是否有阳台：{{rental.balcony ? '有' : '没有'}}</el-col>
-      <el-col :span="12">房租：{{rental.price}}元/月</el-col>
-      <el-col :span="12">出租方式：{{rental.rentalMethod}}</el-col>
-      <el-col :span="12">位置所在区：{{rental.district}}</el-col>
-      <el-col :span="12">小区名字：{{rental.villageName}}</el-col>
-      <el-col :span="12">附近地铁站：{{rental.subwayStation}}</el-col>
-      <el-col :span="12">附近地铁线路：{{rental.subwayLine}}</el-col>
-      <el-col :span="12">备注：{{rental.description}}</el-col>
-      <el-col :span="12">上次更新时间：{{rental.updateTime}}</el-col>
-      <el-col :span="12">创建时间：{{rental.createTime}}</el-col>
-      <el-col :span="12">
-        户型：
-        <el-row>
-          <el-col :span="12">{{rental.houseType}}</el-col>
-        </el-row>
-      </el-col>
-      <el-col :span="24" v-if="true">
-        <h3>出租房照片(点击查看更多图片)</h3>
-        <el-image
-          :src="rental.cover"
-          :preview-src-list="photos"
-          style="width: 500px; height: 500px"
-          fit="fill"
-        />
-      </el-col>
-    </el-row>
+    <div class="container">
+    <div class="left">
+      <div v-for="(image, index) in photos" :key="index">
+        <img :src="image">
+      </div>
+    </div>
+    <div class="right" style="font-size:30px;">
+      <!-- 标题：出租类型：小区名称：户型：朝向 -->
+      <h2 style="font-size:50px;">{{rental.rentalMethod == 0 ? '整租' : '合租'}}·{{rental.villageName}} {{ rental.houseType}} {{rental.toward == 0 ? '东' : (rental.toward == 1 ? '西' : (rental.toward == 2 ? '南' : '北'))}}</h2>
+      <el-row>面积：{{rental.area}}平方米</el-row>
+      <el-row>每月水电费：{{rental.waterRate}}元/吨，{{rental.powerRate}}元/度</el-row>
+      <el-row>是否有厨房：{{rental.kitchen ? '有' : '没有'}}</el-row>
+      <el-row>是否有卫生间：{{rental.toilet ? '有' : '没有'}}</el-row>
+      <el-row>是否有阳台：{{rental.balcony ? '有' : '没有'}}</el-row>
+      <el-row>房租：{{rental.price}}元/月</el-row>
+      <el-row>小区名字：{{rental.address}}-{{rental.villageName}}({{ rental.district }})</el-row>
+      <el-row>附近地铁站：{{rental.subwayStation}}({{rental.subwayLine}})</el-row>
+      <el-row>备注：{{rental.description}}</el-row>
+      <el-row>上次更新时间：{{rental.updateTime}}</el-row>
+      <el-row>创建时间：{{rental.createTime}}</el-row>
+      <el-row>户型：{{rental.houseType}}</el-row>
+      <el-row>户型：{{rental.houseType}}</el-row>
+    </div>
+  </div>
+
   </div>
 </template>
 
@@ -65,7 +58,10 @@ export default {
         .then(response => {
           console.log('response', response)
           this.rental = response.data.data
-          this.photos = JSON.parse(this.rental.images)
+          if(this.rental.images){
+            this.photos = JSON.parse(this.rental.images)
+          }
+          this.photos.push(this.rental.cover)
         })
         .catch(error => console.log(error))
     }
@@ -77,60 +73,40 @@ export default {
 </script>
 
 <style scoped>
-.detail {
+.container {
   display: flex;
-  justify-content: space-between;
-  margin: 20px 0;
+}
 
-  .image-container {
-    width: 50%;
-    height: 300px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.left {
+  width: 50%;
+  height: 800px;
+  overflow-y: auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
 
-    img {
-      width: 100%;
-      height: auto;
-    }
-  }
+.left img {
+  width: 90%;
+  margin: 10px;
+  max-height: 400px;
+  object-fit: cover;
+}
 
-  .info-container {
-    width: 50%;
+.right {
+  width: 50%;
+  padding: 30px;
+}
 
-    .title {
-      font-size: 24px;
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
+.right h2 {
+  font-size: 26px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
 
-    .detail {
-      font-size: 16px;
-      margin-bottom: 10px;
-    }
-
-    .location {
-      font-size: 16px;
-      margin-bottom: 10px;
-    }
-
-    .description {
-      font-size: 16px;
-      margin-bottom: 10px;
-    }
-
-    .transportation {
-      margin-top: 30px;
-
-      .label {
-        font-size: 16px;
-        font-weight: bold;
-      }
-
-      .content {
-        font-size: 16px;
-      }
-    }
-  }
+.right p {
+  font-size: 18px;
+  margin-bottom: 10px;
 }
 </style>
