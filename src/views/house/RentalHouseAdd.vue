@@ -1,8 +1,8 @@
 <template>
-  <div class="rental-add">
-    <h2>新增出租房</h2>
+  <div class="rental-add"  style="width:100%; height:80%;">
     <!-- 新建出租房的表单 -->
-    <el-form ref="form" :model="form" :rules="rules" label-position="left" label-width="150px" class="form">
+    <el-form ref="form" :model="form" :rules="rules" label-position="left" label-width="150px" class="form"  style="width:60%; height:80%;margin-left:auto;">
+      <h2 style="font-size:50px;color:red;">新增出租房</h2>
       <!-- 出租房位置选择(级联) -->
       <el-form-item label="出租房所在地区" prop="regionlLcation">
         <el-cascader

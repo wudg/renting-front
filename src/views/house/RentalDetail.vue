@@ -1,30 +1,29 @@
 <template>
   <div class="rental-details">
-    <div class="container">
-    <div class="left">
-      <div v-for="(image, index) in photos" :key="index">
-        <img :src="image">
-      </div>
+      <div class="container">
+        <div class="left">
+          <div v-for="(image, index) in photos" :key="index">
+            <img :src="image">
+          </div>
+        </div>
+        <div class="right" style="font-size:30px;">
+          <!-- 标题：出租类型：小区名称：户型：朝向 -->
+          <h2 style="font-size:50px;">{{rental.rentalMethod == 0 ? '整租' : '合租'}}·{{rental.villageName}} {{ rental.houseType}} {{rental.toward == 0 ? '东' : (rental.toward == 1 ? '西' : (rental.toward == 2 ? '南' : '北'))}}</h2>
+          <el-row>面积：{{rental.area}}平方米</el-row>
+          <el-row>每月水电费：{{rental.waterRate}}元/吨，{{rental.powerRate}}元/度</el-row>
+          <el-row>是否有厨房：{{rental.kitchen ? '有' : '没有'}}</el-row>
+          <el-row>是否有卫生间：{{rental.toilet ? '有' : '没有'}}</el-row>
+          <el-row>是否有阳台：{{rental.balcony ? '有' : '没有'}}</el-row>
+          <el-row>房租：{{rental.price}}元/月</el-row>
+          <el-row>小区名字：{{rental.address}}-{{rental.villageName}}({{ rental.district }})</el-row>
+          <el-row>附近地铁站：{{rental.subwayStation}}({{rental.subwayLine}})</el-row>
+          <el-row>备注：{{rental.description}}</el-row>
+          <el-row>上次更新时间：{{rental.updateTime}}</el-row>
+          <el-row>创建时间：{{rental.createTime}}</el-row>
+          <el-row>户型：{{rental.houseType}}</el-row>
+          <el-row>户型：{{rental.houseType}}</el-row>
+        </div>
     </div>
-    <div class="right" style="font-size:30px;">
-      <!-- 标题：出租类型：小区名称：户型：朝向 -->
-      <h2 style="font-size:50px;">{{rental.rentalMethod == 0 ? '整租' : '合租'}}·{{rental.villageName}} {{ rental.houseType}} {{rental.toward == 0 ? '东' : (rental.toward == 1 ? '西' : (rental.toward == 2 ? '南' : '北'))}}</h2>
-      <el-row>面积：{{rental.area}}平方米</el-row>
-      <el-row>每月水电费：{{rental.waterRate}}元/吨，{{rental.powerRate}}元/度</el-row>
-      <el-row>是否有厨房：{{rental.kitchen ? '有' : '没有'}}</el-row>
-      <el-row>是否有卫生间：{{rental.toilet ? '有' : '没有'}}</el-row>
-      <el-row>是否有阳台：{{rental.balcony ? '有' : '没有'}}</el-row>
-      <el-row>房租：{{rental.price}}元/月</el-row>
-      <el-row>小区名字：{{rental.address}}-{{rental.villageName}}({{ rental.district }})</el-row>
-      <el-row>附近地铁站：{{rental.subwayStation}}({{rental.subwayLine}})</el-row>
-      <el-row>备注：{{rental.description}}</el-row>
-      <el-row>上次更新时间：{{rental.updateTime}}</el-row>
-      <el-row>创建时间：{{rental.createTime}}</el-row>
-      <el-row>户型：{{rental.houseType}}</el-row>
-      <el-row>户型：{{rental.houseType}}</el-row>
-    </div>
-  </div>
-
   </div>
 </template>
 

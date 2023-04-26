@@ -1,12 +1,16 @@
 <!-- About.vue -->
 <template>
   <div>
-    <h1>出租房源</h1>
+    <rental-list/>
   </div>
 </template>
 
 <script>
+import RentalList from '../house/RentalList.vue'
 export default {
-  name: 'RentHouse'
+  name: 'RentHouse',
+  components:{
+    RentalList
+  }
 }
 </script>
