@@ -9,3 +9,4 @@ export function getHouse(data) {
       data //发送请求要配置的参数 无参数的情况下也可以不写
   });
 }
+

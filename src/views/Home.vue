@@ -8,51 +8,20 @@
 <script>
 
 import RentalList from './house/RentalList.vue'
-import RentalDetail from './house/RentalDetail.vue'
 
 
 export default {
   name: 'Home',
   components: {
-    RentalList, RentalDetail
+    RentalList
   },
   data() {
     return {
-      keyword: '',
-      regions: ["东城区", "西城区", "朝阳区", "丰台区", "石景山区", "海淀区", "门头沟区", "房山区", "通州区", "顺义区", "昌平区", "大兴区", "怀柔区", "平谷区", "密云区", "延庆区"],
-      subwayLines: ["1号线", "2号线", "3号线", "4号线", "5号线", "6号线", "7号线", "8号线", "9号线", "10号线", "13号线", "14号线", "15号线"],
-      layouts: ["一室", "二室", "三室", "四室", "五室及以上"],
-      search: {
-        region: "",
-        subwayLine: "",
-        priceRange: [0, 10000],
-        layout: "",
-        orientation: [],
-        hasBathroom: "",
-        hasKitchen: "",
-        hasBalcony: ""
-      },
       homeItems: []
     }
   },
   methods: {
-    searchHouses() {
-      console.log(this.search); // 在这里编写发起搜索请求的代码
-    },
-      getHouseLocal(){
-        axios.get('/api/house/list', {
-        params:{
-          keyword: this.keyword
-        }
-        })
-        .then(response => {
-          this.homeItems = response.data.data
-        })
-        .catch(error => console.log(error))
-      }
-  },
-  created() {
-    // this.getHouseLocal()
+
   }
 }
 </script>
