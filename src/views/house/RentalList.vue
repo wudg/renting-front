@@ -75,7 +75,7 @@
 
 <script>
 
-import axios from "axios";  //引入axios
+import {houseList} from "@/http/api";
 
 export default {
   name: 'RentalList',
@@ -112,15 +112,15 @@ export default {
 
     // 获取所有出租房信息
     getHouseList(){
-      axios.get('/api/house/pageList', {
-        // 分页查询和关键词
-        params: {
+      console.log('axios headers', this.$http.defaults.headers)
+      const param =  {
           pageSize: this.pagesize,
           pageNum: this.currentPage,
           keyword: this.keyword
         }
-        })
+        houseList(param)
         .then(response => {
+          console.log('response', response)
           this.houses = response.data.data.rows
           this.total = response.data.data.total
         })

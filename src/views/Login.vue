@@ -9,19 +9,20 @@
         <el-input type="password" v-model="form.password"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="submitForm('loginForm')">登　录</el-button>
+        <el-button type="primary" @click="userLogin('loginForm')">登　录</el-button>
       </el-form-item>
     </el-form>
   </div>
 </template>
 
 <script>
-import axios from 'axios'
-import jwtDecode from 'jwt-decode'
+
+import {login} from "@/http/api";
 
 export default {
   data() {
     return {
+      token: '',
       form: {
         username: '',
         password: ''
@@ -33,21 +34,19 @@ export default {
     }
   },
   methods: {
-    submitForm(formName) {
+    userLogin(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
           // 表单验证通过后的逻辑
-          axios.post('/api/login', {
+          const param = {
             username: this.form.username,
             password: this.form.password
-          })
+          };
+          login(param)
           .then(response => {
-            console.log(response.data)
-            const token = response.data.data
-            const decoded = jwtDecode(token)
-            localStorage.setItem('currentUser', JSON.stringify(decoded))
-            localStorage.setItem('token', token)
-            console.log(localStorage)
+            this.token = response.data.data
+            localStorage.setItem('token', `Bearer ${this.token}`);
+            // 跳转到首页
             this.$router.push('/')
           })
           .catch(error => console.log(error))
