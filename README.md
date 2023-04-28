@@ -1,21 +1,15 @@
 # renting-front
 
-> A Vue.js project
+租房项目前端
 
-## Build Setup
+## 开发历程
 
-``` bash
-# install dependencies
-npm install
+2023-04-28 v.0.0.1 完成出租房新增、列表、用户登陆注册功能，待完善
 
-# serve with hot reload at localhost:8080
-npm run dev
 
-# build for production with minification
-npm run build
+## 待办
 
-# build for production and view the bundle analyzer report
-npm run build --report
-```
+1. 权限控制模块，需要对用户实现菜单级别以及API级别的控制
+2. 严格校验用户新增出租房的表单
+3. 严格校验一手房东联系方式
 
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
