@@ -3,7 +3,7 @@
     <!-- 新增出租房按钮 -->
     <el-button type="primary" @click="$router.push('/rental/house/add')" style="position:absolute;top:80px;right:20px;">新增出租房</el-button>
     <!-- 按小区名字搜索出租房 -->
-    <el-input v-model="keyword" placeholder="请输入小区名称" @input="getHouseList" size="medium"></el-input>
+    <el-input v-model="keyword" placeholder="请输入小区名称" @input="getHouseList" size="medium" style="width:300px;"></el-input>
 
     <!-- 出租房列表 -->
     <el-row>
@@ -18,14 +18,15 @@
 
           <!-- 出租房其他描述信息 -->
           <div class="content-container">
-            <!-- 具体位置(所在区) -->
-            <div class="house-title"> {{ house.address }}<span v-if="house.district">({{house.district}}) </span></div>
-
-            <!-- 地铁站(地铁线路) -->
-            <div class="house-title"> {{ house.subwayStation }}<span v-if="house.subwayStationLine">({{house.subwayLine}})</span> </div>
 
             <!-- 出租类型-所在小区 -->
-            <div class="house-address"> {{house.rentalMethod == 0 ? '整租' : '合租'}} - {{ house.villageName }}</div>
+            <div class="house-title"> {{house.rentalMethod == 0 ? '整租' : '合租'}} - {{ house.villageName }}</div>
+
+            <!-- 具体位置(所在区) -->
+            <div class="house-address">地址： {{ house.address }}<span v-if="house.district">({{house.district}}) </span></div>
+
+            <!-- 地铁站(地铁线路) -->
+            <div class="house-subway">附近地铁： {{ house.subwayStation }}<span v-if="house.subwayLine">({{house.subwayLine}})</span> </div>
 
             <!-- 房子基本属性 -->
             <div class="house-info">
@@ -54,7 +55,7 @@
             </div>
 
             <!-- 备注 -->
-            <div class="house-more">
+            <div class="house-description">
                 {{ house.description ? house.description : '无备注信息' }}
             </div>
           </div>
@@ -184,14 +185,20 @@ export default {
   align-items: center;
 }
 
+.house-description {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
 .house-price {
-  font-size: 24px;
+  font-size: 28px;
   color: #ff5a5f;
   font-weight: bold;
 }
 
-.house-address {
-  font-size: 18px;
+.house-title {
+  font-size: 25px;
   font-weight: bold;
   margin-top: 10px;
 }
