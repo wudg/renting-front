@@ -18,12 +18,16 @@ export default new Router({
     {
       path: '/',
       name: 'home',
-      component: Home
+      component: Home,
+      // meta: {
+      //   title: '首页',
+      //   requireAuth: true  // 是否需要判断是否登录,这里是需要判断
+      // }
     },
     {
       path: '/rent/house',
       name: 'rentHouse',
-      component: RentHouse
+      component: RentHouse,
     },
     {
       path: '/rental/house/add',
@@ -58,7 +62,11 @@ export default new Router({
     {
       path: '/login',
       name: 'login',
-      component: Login
+      component: Login,
+      // meta: {
+      //   title: 'login',
+      //   requireAuth: '' // 不需要鉴权
+      // }
     }
   ]
 })

@@ -29,7 +29,7 @@
 
 <script>
 
-import axios from "axios";  //引入axios
+import {getHouseDetail} from '@/http/api'
 
 export default {
   name: 'RentalDetail',
@@ -49,11 +49,7 @@ export default {
   },
   methods: {
     getHouseById(id) {
-      axios.get('/api/house/detail', {
-        params:{
-          id: id
-        }
-        })
+      getHouseDetail({id: id})
         .then(response => {
           console.log('response', response)
           this.rental = response.data.data

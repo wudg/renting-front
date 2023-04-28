@@ -4,9 +4,9 @@
     <el-form ref="form" :model="form" :rules="rules" label-position="left" label-width="150px" class="form"  style="width:60%; height:80%;margin-left:auto;">
       <h2 style="font-size:50px;color:red;">新增出租房</h2>
       <!-- 出租房位置选择(级联) -->
-      <el-form-item label="出租房所在地区" prop="regionlLcation">
+      <el-form-item label="出租房所在地区" prop="regionLocation">
         <el-cascader
-        v-model="form.regionlLcation"
+        v-model="form.regionLocation"
         :options="regionOptions"
         :props="{ checkStrictly: true }"
         placeholder="请选择出租房所在地区"
@@ -54,9 +54,10 @@
       <!-- 出租房主图 -->
       <el-form-item label="封面图" >
         <el-upload
-          ref="upload"
+          :http-request="uploadImgLocal"
           class="upload-demo"
-          :action="uploadURL"
+          action="action"
+          :before-upload="beforeUpload"
           :show-file-list="false"
           :on-success="handleSuccess1">
           <el-button size="small" type="primary">点击上传</el-button>
@@ -115,7 +116,8 @@
         <el-upload
           ref="upload"
           class="upload-demo"
-          :action="uploadURL"
+          :http-request="uploadImgBatchLocal"
+          action="action"
           :on-remove="handleRemove"
           :on-success="handleSuccess2"
           :multiple="true">
@@ -141,8 +143,9 @@
 </template>
 
 <script>
-import axios from 'axios';
 import { Notification } from 'element-ui';
+import {addHouse, queryRegionData, querySubwayData, queryHouseTypeData, uploadImg} from '@/http/api'
+
 
 export default {
   name: 'RentalAdd',
@@ -150,7 +153,7 @@ export default {
     return {
       // 表单数据对象
       form: {
-        regionlLcation: [],
+        regionLocation: [],
         subwayLocation:[],
         price: '',
         area:'',
@@ -179,7 +182,7 @@ export default {
 
       // 表单规则
       rules: {
-        regionlLcation: [
+        regionLocation: [
           { required: true, message: '请选择出租房所在地区', trigger: 'change' }
         ],
         subwayLocation: [
@@ -198,16 +201,13 @@ export default {
           { required: true, message: '请选择出租房户型', trigger: 'blur' }
         ],
         price: [
-          { required: true, message: '请输入月租金', trigger: 'blur' },
-          { type: 'number', message: '月租金必须为数字值', trigger: 'blur' }
+          { required: true, message: '请输入月租金', trigger: 'blur' }
         ],
         waterRate: [
-          { required: true, message: '请输入水费', trigger: 'blur' },
-          { type: 'number', message: '水费必须为数字值', trigger: 'blur' }
+          { required: true, message: '请输入水费', trigger: 'blur' }
         ],
         powerRate: [
-          { required: true, message: '请输入电费', trigger: 'blur' },
-          { type: 'number', message: '电费必须为数字值', trigger: 'blur' }
+          { required: true, message: '请输入电费', trigger: 'blur' }
         ],
         // toilet: [
         //   { required: true, message: '请选择是否有卫生间', trigger: 'change' }
@@ -229,18 +229,23 @@ export default {
         ]
       },
       // 后端图片上传路径
-      uploadURL: '/api/house/uploadImg'
+      // uploadURL: '/api/house/uploadImg'
     };
   },
   methods: {
+    beforeUpload(file){
+
+    },
     // 出租房主图上传成功后回调
     handleSuccess1(res) {
+      console.log('handleSuccess1 res', res)
       Notification.success('上传成功');
       this.form.cover = res.data; // res.data.url是上传成功后的图片地址
     },
 
     // 对已上传成功的宣传照片删除，从photo中移除
     handleRemove(file, photos) {
+      console.log('handleSuccess2 photos', photos)
       let index = photos.indexOf(file.response.data);
       this.form.photos.splice(index, 1)
     },
@@ -252,10 +257,39 @@ export default {
       console.log('所有图片', this.form.photos)
     },
 
+    uploadImgLocal(param){
+      var formData = new FormData()
+      console.log('param', param)
+      console.log('file', param.file)
+      formData.append("file", param.file)
+      uploadImg(formData)
+        .then(response => {
+          console.log('uploadImgLocal-response', response)
+          console.log('response.data.data', response.data.data)
+          this.form.cover = response.data.data
+        })
+        .catch(error => console.log(error))
+    },
+
+    uploadImgBatchLocal(param){
+      var formData = new FormData()
+      console.log('param', param)
+      console.log('file', param.file)
+      formData.append("file", param.file)
+      console.log('formData', formData)
+      Notification.success('上传成功');
+      uploadImg(formData)
+        .then(response => {
+          console.log('uploadImgLocal-response', response)
+          console.log('response.data.data', response.data.data)
+          this.form.photos.push(response.data.data);
+        })
+        .catch(error => console.log(error))
+    },
+
     // 获取南昌级联区域数据
     getMapCity(){
-      axios.get('/api/house/mapCity', {
-        })
+      queryRegionData()
         .then(response => {
           this.regionOptions = response.data.data
         })
@@ -263,8 +297,7 @@ export default {
       },
       // 获取南昌地铁级联数据
       listMapSubway(){
-      axios.get('/api/house/mapSubway', {
-        })
+        querySubwayData()
         .then(response => {
           this.subwayOptions = response.data.data
         })
@@ -272,8 +305,7 @@ export default {
       },
       // 获取出租房户型数据
       listHouseType(){
-      axios.get('/api/house/listHouseType', {
-        })
+        queryHouseTypeData()
         .then(response => {
           this.houseTypeList = response.data.data
         })
@@ -281,9 +313,7 @@ export default {
       },
     // 提交表单
     submitForm(formName) {
-      this.$refs[formName].validate((valid) => {
-        if(valid) {
-          axios.post('/api/house/save', this.form)
+      addHouse(this.form)
             .then(res => {
               Notification.success('新增出租房成功');
               this.$router.push('/');
@@ -292,11 +322,6 @@ export default {
               console.log(err)
               Notification.error('新增出租房失败，请稍候再试');
             });
-        }else {
-            Notification.error('请检查表单数据是否符合要求');
-        }
-      })
-
     }
   },
   created() {

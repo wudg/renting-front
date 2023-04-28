@@ -15,8 +15,8 @@ const service = axios.create({
 service.interceptors.request.use(
 config => {
     // 在发送请求之前做些什么 验证token之类的
-    console.log("请求的数据:", config);
-    console.log("token:", localStorage.getItem('token'))
+    // console.log("请求的数据:", config);
+    // console.log("token:", localStorage.getItem('token'))
     if (localStorage.getItem('token')) {
       config.headers.Authorization = "Bearer " + localStorage.getItem('token')
     }
